@@ -32,21 +32,32 @@ end
 
 class LcDeleter
   def delete_unused_lcs
-    binding.pry
     inactive_lcs.each do |lc|
       lc.delete
     end
   end
 
-  def active_lcs
-    lcs_associated_with_asg_instances + lcs_associated_with_asgs
+  def active_lc_names
+    lc_names_associated_with_asg_instances + lc_names_associated_with_asgs
   end
 
-  def lcs_associated_with_asg_instances
-
+  def lc_names_associated_with_asg_instances
+    aws_wrapper.all_asg_instances.collect do |instance|
+      instance.launch_configuration_name
+    end
   end
 
-  def lcs_associated_with_asgs
+  def lc_names_associated_with_asgs
+    aws_wrapper.all_asgs.collect do |asg|
+      asg.launch_configuration_name
+    end
+  end
+
+  def inactive_lcs
+    all_lcs.collect do |lc|
+      lc unless active_lc_names.include?(lc.launch_configuration_name)
+    end.compact
+  end
 
   def all_lcs
     aws_wrapper.all_lcs
