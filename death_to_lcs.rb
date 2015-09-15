@@ -18,6 +18,13 @@ class DeathToLcs
 
   def self.parse_args
     Slop.parse do |o|
+      o.on '--dry', 'dry run' do
+        puts '-------------------------------------'
+        puts 'Launch Configurations to be deleted'
+        puts '-------------------------------------'
+        puts lc_deleter.unused_lc_names
+        exit
+      end
       o.on '--version', 'print the version' do
         puts DeathToLcs::VERSION
         exit
@@ -31,6 +38,12 @@ class DeathToLcs
 end
 
 class LcDeleter
+  def unused_lc_names
+    inactive_lcs.collect do |lc|
+      lc.launch_configuration_name
+    end
+  end
+
   def delete_unused_lcs
     inactive_lcs.each do |lc|
       lc.delete
