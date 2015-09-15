@@ -48,14 +48,67 @@ class LcDeleter
 
   def lcs_associated_with_asgs
 
-  end
-
-  def inactive_lcs
-    all_lcs - active_lcs
-  end
-
   def all_lcs
-    
+    aws_wrapper.all_lcs
+  end
+
+  def aws_wrapper
+    AwsWrapper.new
+  end
+end
+
+class AwsWrapper
+  def all_lcs
+    results = []
+    while true
+      result = client.describe_launch_configurations
+      results = results + result.launch_configurations
+
+      if result.last_page?
+        break
+      else
+        result.next_page
+      end
+    end
+
+    results
+  end
+
+  def all_asg_instances
+    results = []
+    while true
+      result = client.describe_auto_scaling_instances
+      results = results + result.auto_scaling_instances
+
+      if result.last_page?
+        break
+      else
+        result.next_page
+      end
+    end
+
+    results
+  end
+
+  def all_asgs
+    results = []
+    while true
+      result = client.describe_auto_scaling_groups
+      results = results + result.auto_scaling_groups
+
+      if result.last_page?
+        break
+      else
+        result.next_page
+      end
+    end
+
+    results
+  end
+
+  private
+  def client
+    Aws::AutoScaling::Client.new
   end
 end
 
