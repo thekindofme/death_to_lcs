@@ -9,7 +9,11 @@ class DeathToLcs
   def self.run
     load_env
     opts = parse_args
-    lc_deleter.delete_unused_lcs
+
+    puts '-------------------------------------'
+    puts 'Launch Configurations deleted'
+    puts '-------------------------------------'
+    puts lc_deleter.delete_unused_lcs
   end
 
   def self.lc_deleter
@@ -45,8 +49,9 @@ class LcDeleter
   end
 
   def delete_unused_lcs
-    inactive_lcs.each do |lc|
-      lc.delete
+    inactive_lcs.collect do |lc|
+      aws_asg_wrapper.delete_lc lc.launch_configuration_name
+      lc.launch_configuration_name
     end
   end
 
@@ -82,6 +87,12 @@ class LcDeleter
 end
 
 class AwsAutoScalingWrapper
+  def delete_lc lc_name
+    client.delete_launch_configuration({
+                                           launch_configuration_name: lc_name,
+                                       })
+  end
+
   def all_lcs
     results = []
     while true
