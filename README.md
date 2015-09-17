@@ -1,4 +1,4 @@
-# death_to_lcs
+# Death To LCs
 Cleans up unused AWS launch configs
 
 # References
