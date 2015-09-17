@@ -55,13 +55,13 @@ class LcDeleter
   end
 
   def lc_names_associated_with_asg_instances
-    aws_wrapper.all_asg_instances.collect do |instance|
+    aws_asg_wrapper.all_asg_instances.collect do |instance|
       instance.launch_configuration_name
     end
   end
 
   def lc_names_associated_with_asgs
-    aws_wrapper.all_asgs.collect do |asg|
+    aws_asg_wrapper.all_asgs.collect do |asg|
       asg.launch_configuration_name
     end
   end
@@ -73,15 +73,15 @@ class LcDeleter
   end
 
   def all_lcs
-    aws_wrapper.all_lcs
+    aws_asg_wrapper.all_lcs
   end
 
-  def aws_wrapper
-    AwsWrapper.new
+  def aws_asg_wrapper
+    AwsAutoScalingWrapper.new
   end
 end
 
-class AwsWrapper
+class AwsAutoScalingWrapper
   def all_lcs
     results = []
     while true
